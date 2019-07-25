@@ -15,13 +15,10 @@ $(document).ready(function() {
     $('#search, #search-close, #noItem').hide();
 
     $('#bar').on('click', () => {
-        $('#sidebar').css('width', 250);
-        $('body').css('background-color', 'rgba(0,0,0,0.4)');
+        $('#side-menu').removeClass('in');
+        $('#side-menu').addClass('in');
     });
-    $('#close').on('click', () => {
-        $('#sidebar').css('width', 0);
-        $('body').css('background-color', '#f5f5f5');
-    });
+
     $('#btn-search').on('click', function() {
         $('#search, #search-close').show();
         $('#search').css('width', '50%');
@@ -32,15 +29,16 @@ $(document).ready(function() {
         closeSearch();
 
     });
-    $('.scrollmenu li').on('click', function() {
+    $('.scrollmenu li, .list-group-item').on('click', function() {
         closeSearch();
         $('.scrollmenu a').removeClass('active');
-        $(this).children(':first-child').addClass('active');
-        $('#itemlist').find('.menu-item').remove();
-        $('#itemlist').find('.alert').remove();
+        $('.list-group-item').removeClass('active');
 
-        const catid = parseInt($(this).attr('id'));
+        const catid = parseInt($(this).data('id'));
 
+        $('.scrollmenu li[data-id=' + catid + ']').children(':first-child').addClass('active');
+        $('.list-group a[data-id=' + catid + ']').addClass('active');
+        $('#side-menu').modal('hide');
 
         if (catid == 0) {
             showItems(initItems);
@@ -71,11 +69,6 @@ $(document).ready(function() {
         }
 
     });
-    $('#quantity').on('input', function() {
-        let quantity = $(this).val();
-        let price = $(this).closest('.price').data('price');
-        $('#total').text(numberWithCommas(quantity * price) + " VND");
-    });
 
     $('#itemlist').on('click', '.thumbnail, .title', function() {
         let info = $(this).closest('.menu-item');
@@ -88,7 +81,6 @@ $(document).ready(function() {
         $('#btnAddCart').attr('data-id', info.data('id'));
         $('#btnAddCart').attr('data-price', info.find('.price').data('price'));
 
-        $('#total').text(info.find('.price').text());
         $("#mdDetail").modal();
 
     });
@@ -108,12 +100,13 @@ $(document).ready(function() {
             price: price,
             createdAt: Date.now()
         };
+        console.log(product);
         addToCart(product);
-        $('#shoppingBar').show();
+        showCartBar();
 
-
+        return false;
     });
-    $('#itemlist').on('click', '.substract, .plus', function() {
+    $('#itemlist, #mdDetail').on('click', '.substract, .plus', function() {
         let txtQuantity = $(this).closest('.input-group').find('.quantity');
         let quantity = txtQuantity.val();
 
@@ -166,26 +159,27 @@ function showNoItem() {
 Không tìm thấy món ăn nào phù hợp.
 </div>
 `;
-    $('#itemlist').append(html);
+    $('#itemlist').html(html);
 }
 
 function generateMenu() {
     let cates = [];
-    let links = `<a id='0' href='javascript:;'>Tất cả</a>`;
-    let lis = `<ul><li id='0'><a href='javascript:;'>Tất cả</a></li>`;
+    let links = `<a data-id='0' class='list-group-item' href='javascript:;'>Tất cả</a>`;
+    let lis = `<ul><li data-id='0'><a href='javascript:;'>Tất cả</a></li>`;
 
     for (let i = 1; i < 16; i++) {
-        links += `<a id='${i}' href='javascript:;'>menu ${i}</a>`;
-        lis += `<li id='${i}'><a href='javascript:;'>menu ${i}</a></li>`;
+        links += `<a data-id='${i}' class='list-group-item' href='javascript:;'>menu ${i}</a>`;
+        lis += `<li data-id='${i}'><a href='javascript:;'>menu ${i}</a></li>`;
         initCates.push({
             cateId: i,
             cateName: 'menu ' + i
         });
     }
     lis += `</ul>`;
-    $('#menu-cate').html(links);
+    $('#side-menu .list-group').html(links);
     $('.simplebar-content').html(lis);
-    $('#sidebar').html(links);
+    $('.list-group-item:first').addClass('active');
+
     $('li:first a').addClass('active');
 
 
@@ -210,6 +204,8 @@ function generateItems() {
 
 function showItems(items) {
     let itemlist = $('#itemlist');
+    itemlist.find('.menu-item').remove();
+    itemlist.find('.alert').remove();
     items.forEach((item) => {
         let html = generateItem(item);
         itemlist.append(html);
@@ -236,7 +232,7 @@ function generateItem(item) {
                                             <div class="input-group-prepend">
                                                 <span class="input-group-text substract" style="cursor: pointer;">-</span>
                                             </div> 
-                                            <input style="max-width:50px; text-align: center;" type="text" inputmode="numeric" class="form-control quantity" min="1" value="1" data-price="${item.price}">
+                                            <input style="max-width:50px; text-align: center;" type="number" inputmode="numeric" class="form-control quantity" min="1" value="1" data-price="${item.price}">
                                             <div class="input-group-prepend">
 
                                                 <span class="input-group-text plus" style="cursor: pointer;">+</span>

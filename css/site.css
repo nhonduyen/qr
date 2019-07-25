@@ -68,6 +68,7 @@ input[type=search] {
     font-size: 28px;
     background-size: contain;
     cursor: pointer;
+    color: #a16e39;
 }
 
 #search-close {
@@ -256,6 +257,72 @@ input[type=search]:focus {
     padding: 0 1rem;
 }
 
+
+/* left menu */
+
+#side-menu .modal-content {
+    border-radius: 0;
+    height: 100vh;
+    border: none;
+}
+
+#side-menu .modal-body {
+    width: 100%;
+}
+
+.modal-menu {
+    padding-left: 0;
+}
+
+.fade-left {
+    transform: translateX(-100%);
+    opacity: 0;
+    transition: all 0.25s linear;
+}
+
+.fade-left.in {
+    transform: translateX(0);
+    opacity: 1;
+}
+
+.modal-menu .modal-dialog {
+    margin: 0 auto 0 0;
+    width: auto;
+    max-width: 100%;
+    display: block;
+    float: left;
+    min-width: 260px;
+}
+
+.list-group {
+    width: 100%;
+    padding-left: 0;
+}
+
+.list-group-item {
+    border: none;
+    border-radius: 0;
+    text-transform: uppercase;
+    color: #000;
+    padding: 1rem 1rem;
+    width: 100%;
+}
+
+.list-group-item:first-child {
+    border-radius: 0;
+}
+
+.list-group-item:hover {
+    text-decoration: none;
+    color: #000;
+    background-color: #F5F5F5;
+}
+
+.list-group .active {
+    background-color: #A16E39 !important;
+    color: #fff;
+}
+
 @media screen and (max-width: 710px) {
     .menu-item {
         width: 100%;
@@ -267,4 +334,17 @@ input[type=search]:focus {
     .menu-item:nth-child(2n+2) {
         margin-left: 0;
     }
+}
+
+
+/* hide input number spinner */
+
+input[type=number]::-webkit-outer-spin-button,
+input[type=number]::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+input[type=number] {
+    -moz-appearance: textfield;
 }
