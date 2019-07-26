@@ -1,3 +1,5 @@
+"use strict";
+
 const initItems = [];
 const initCates = [];
 $(document).ready(function() {
@@ -29,7 +31,7 @@ $(document).ready(function() {
         closeSearch();
 
     });
-    $('.scrollmenu li, .list-group-item').on('click', function() {
+    $('.scrollmenu li, .side-group-item').on('click', function() {
         closeSearch();
         $('.scrollmenu a').removeClass('active');
         $('.list-group-item').removeClass('active');
@@ -84,12 +86,87 @@ $(document).ready(function() {
         $("#mdDetail").modal();
 
     });
+    $('#listCart').on('click', '.remove-item', function() {
+        let id = $(this).data('id');
+        let createdAt = $(this).data('createdat');
+
+        let products = localStorage.getItem('products');
+
+        products = JSON.parse(products);
+        if (products.length > 0) {
+            products.forEach((product) => {
+
+                if (product.id === id && product.createdAt === createdAt) {
+                    let total = parseInt($('#sumCart').text().split(' ')[0].replace(',', '')) - parseInt(product.price) * parseInt(product.quantity);
+                    $('#sumCart').text(numberWithCommas(total) + ' VND');
+
+                    let index = products.indexOf(product);
+                    products.splice(index, 1);
+                    localStorage.setItem('products', JSON.stringify(products));
+                    $(this).closest('li').remove();
+
+                    if ($('#listCart li').length == 1) {
+                        $("#mdCart").modal('hide');
+                    }
+                    showCartBar();
+
+                }
+            });
+        }
+
+        $('#sumCart').text(numberWithCommas(sumFinal) + ' VND');
+    });
+    $('#btnCart').click(function() {
+        let products = localStorage.getItem('products');
+        const cartItems = JSON.parse(products);
+        if (cartItems.length > 0) {
+
+            $('#listCart li:not(#liSum)').remove();
+
+            $('.nav-link').removeClass('active');
+            $(this).children('a').addClass('active');
+            $(this).find('span').removeClass('badge-primary').addClass('badge-light');
+
+            let total = 0;
+
+            cartItems.forEach((item) => {
+                let html1 = `
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                  <span><strong>${item.name}</strong></span>
+                  <span class="price-color" style="width:100px;">${numberWithCommas( item.price)} VND</span>
+                  <input style="max-width:50px; text-align: center;" type="number" inputmode="numeric" class="form-control quantity" min="1" value="${item.quantity}" >
+                  <a href="javascript:void(0);" class="text-dark remove-item" data-id="${item.id}" data-createdAt="${item.createdAt}">
+                    <i style="color: red" class="fa fa-trash"></i></a>
+                </li>`;
+
+                total += parseInt(item.price) * parseInt(item.quantity);
+
+                $('#listCart').prepend(html1);
+            });
+
+            $('#sumCart').text(numberWithCommas(total) + ' VND');
+            //$('#sumQuant').text(quant);
+            $('#mdCart').modal();
+        }
+    });
+    $('#btnBill').click(function() {
+        $('.nav-link').removeClass('active');
+        $(this).children('a').addClass('active');
+        $(this).find('span').removeClass('badge-primary').addClass('badge-light');
+
+    });
+    $('#btnCall').click(function() {
+        $('.nav-link').removeClass('active');
+        $(this).children('a').addClass('active');
+        $(this).find('span').removeClass('badge-primary').addClass('badge-light');
+    });
     $('#frmAddCart').submit((e) => {
         e.preventDefault();
         let quantity = $('#quantity').val();
         let name = $('#item-name').text();
         let id = $('#btnAddCart').data('id');
         let price = $('#btnAddCart').data('price');
+        let url = $('#mdImg').attr('src');
         $("#mdDetail").modal('hide');
         $('.toast-body').text(`Bạn vừa thêm ${quantity} x ${name} vào giỏ hàng.`);
         $('#myToast').toast('show');
@@ -98,9 +175,10 @@ $(document).ready(function() {
             name: name,
             quantity: quantity,
             price: price,
+            url: url,
             createdAt: Date.now()
         };
-        console.log(product);
+
         addToCart(product);
         showCartBar();
 
@@ -133,10 +211,13 @@ $(document).ready(function() {
             id: $(this).data('id'),
             name: $(this).closest('.info').find('.title').text(),
             quantity: quantity,
+            url: $(this).closest('img').attr('src'),
             price: $(this).data('price'),
             createdAt: Date.now()
         };
         addToCart(product);
+
+        $('#myToast').css('top', $('#menu1').position().top);
         $('.toast-body').text(`Bạn vừa thêm ${quantity} x ${product.name} vào giỏ hàng.`);
         $('#myToast').toast('show');
         showCartBar();
@@ -164,11 +245,11 @@ Không tìm thấy món ăn nào phù hợp.
 
 function generateMenu() {
     let cates = [];
-    let links = `<a data-id='0' class='list-group-item' href='javascript:;'>Tất cả</a>`;
+    let links = `<a data-id='0' class='list-group-item side-group-item' href='javascript:;'>Tất cả</a>`;
     let lis = `<ul><li data-id='0'><a href='javascript:;'>Tất cả</a></li>`;
 
     for (let i = 1; i < 16; i++) {
-        links += `<a data-id='${i}' class='list-group-item' href='javascript:;'>menu ${i}</a>`;
+        links += `<a data-id='${i}' class='list-group-item side-group-item' href='javascript:;'>menu ${i}</a>`;
         lis += `<li data-id='${i}'><a href='javascript:;'>menu ${i}</a></li>`;
         initCates.push({
             cateId: i,
@@ -178,9 +259,9 @@ function generateMenu() {
     lis += `</ul>`;
     $('#side-menu .list-group').html(links);
     $('.simplebar-content').html(lis);
-    $('.list-group-item:first').addClass('active');
+    $('.side-group-item:first').addClass('active');
 
-    $('li:first a').addClass('active');
+    $('.simplebar-content li:first a').addClass('active');
 
 
 }
@@ -258,6 +339,8 @@ function showCartBar() {
 }
 
 function numberWithCommas(x) {
+    if (isNaN(x))
+        return -1;
     return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 }
 
@@ -273,4 +356,16 @@ function addToCart(product) {
         newProducts.push(product);
         localStorage.setItem('products', JSON.stringify(newProducts));
     }
+}
+
+function getSumCart() {
+    let products = localStorage.getItem('products');
+
+    products = JSON.parse(products);
+    if (products.length === 0) return 0;
+    let sum = 0;
+    products.forEach((product) => {
+        sum += parseInt(product.price) * parseInt(product.quantity);
+    });
+    return sum;
 }

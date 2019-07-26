@@ -87,6 +87,7 @@ input[type=search]:focus {
 
 #foodlist {
     position: relative;
+    margin-bottom: 50px;
 }
 
 #menu1 {
@@ -294,12 +295,12 @@ input[type=search]:focus {
     min-width: 260px;
 }
 
-.list-group {
+.side-group {
     width: 100%;
     padding-left: 0;
 }
 
-.list-group-item {
+.side-group-item {
     border: none;
     border-radius: 0;
     text-transform: uppercase;
@@ -308,19 +309,23 @@ input[type=search]:focus {
     width: 100%;
 }
 
-.list-group-item:first-child {
+.side-group-item:first-child {
     border-radius: 0;
 }
 
-.list-group-item:hover {
+.side-group-item:hover {
     text-decoration: none;
     color: #000;
     background-color: #F5F5F5;
 }
 
-.list-group .active {
+.side-group .active {
     background-color: #A16E39 !important;
     color: #fff;
+}
+
+.pb-5 {
+    padding-bottom: 0 !important;
 }
 
 @media screen and (max-width: 710px) {
