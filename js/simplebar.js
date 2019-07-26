@@ -110,11 +110,10 @@ $(document).ready(function() {
                     }
                     showCartBar();
 
+                    return false;
                 }
             });
         }
-
-        $('#sumCart').text(numberWithCommas(sumFinal) + ' VND');
     });
     $('#btnCart').click(function() {
         let products = localStorage.getItem('products');
