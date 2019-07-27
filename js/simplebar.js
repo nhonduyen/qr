@@ -23,7 +23,7 @@ $(document).ready(function() {
 
     $('#btn-search').on('click', function() {
         $('#search, #search-close').show();
-        $('#search').css('width', '50%');
+        $('#search').css('width', '90%');
         $(this).hide();
         $('#search').focus();
     });
@@ -115,6 +115,41 @@ $(document).ready(function() {
             });
         }
     });
+    $('#listCart').on('change input', '.quantity', function(e) {
+
+        if (e.type === 'change' && !$(this).val()) {
+            $(this).val(parseInt($(this).data('value')));
+        }
+
+        if (!$(this).val() || isNaN($(this).val()) || parseInt($(this).val()) < 1)
+            return false;
+
+        let quantity = parseInt($(this).val());
+
+
+
+
+        let id = $(this).siblings('.remove-item').data('id');
+        let createdAt = $(this).siblings('.remove-item').data('createdat');
+
+        let products = JSON.parse(localStorage.getItem('products'));
+
+        if (products.length > 0) {
+            products.forEach((product) => {
+
+                if (product.id === id && product.createdAt === createdAt) {
+                    product.quantity = quantity;
+
+                    localStorage.setItem('products', JSON.stringify(products));
+                    let total = getSumCart();
+
+                    $('#sumCart').text(numberWithCommas(total) + ' VND');
+
+                    return false;
+                }
+            });
+        }
+    });
     $('#btnCart').click(function() {
         let products = localStorage.getItem('products');
         const cartItems = JSON.parse(products);
@@ -133,7 +168,7 @@ $(document).ready(function() {
                 <li class="list-group-item d-flex justify-content-between align-items-center">
                   <span><strong>${item.name}</strong></span>
                   <span class="price-color" style="width:100px;">${numberWithCommas( item.price)} VND</span>
-                  <input style="max-width:50px; text-align: center;" type="number" inputmode="numeric" class="form-control quantity" min="1" value="${item.quantity}" >
+                  <input style="max-width:50px; text-align: center;" type="number" inputmode="numeric" class="form-control quantity" min="1" data-value="${item.quantity}" value="${item.quantity}" >
                   <a href="javascript:void(0);" class="text-dark remove-item" data-id="${item.id}" data-createdAt="${item.createdAt}">
                     <i style="color: red" class="fa fa-trash"></i></a>
                 </li>`;
@@ -166,6 +201,7 @@ $(document).ready(function() {
         let id = $('#btnAddCart').data('id');
         let price = $('#btnAddCart').data('price');
         let url = $('#mdImg').attr('src');
+        console.log(url);
         $("#mdDetail").modal('hide');
         $('.toast-body').text(`Bạn vừa thêm ${quantity} x ${name} vào giỏ hàng.`);
         $('#myToast').toast('show');
@@ -210,7 +246,7 @@ $(document).ready(function() {
             id: $(this).data('id'),
             name: $(this).closest('.info').find('.title').text(),
             quantity: quantity,
-            url: $(this).closest('img').attr('src'),
+            url: $(this).closest('.menu-item').find('img').attr('src'),
             price: $(this).data('price'),
             createdAt: Date.now()
         };
@@ -226,7 +262,7 @@ $(document).ready(function() {
 function closeSearch() {
     $('#search').css('width', 0);
     $('#search-close').hide();
-    $('#search').fadeOut(function() {
+    $('#search').fadeOut(() => {
         $('#btn-search').show();
     });
     $('#search').val('');
@@ -347,7 +383,23 @@ function addToCart(product) {
     let products = localStorage.getItem('products');
     if (products) {
         let currentProducts = JSON.parse(localStorage.getItem('products'));
-        currentProducts.push(product);
+
+        // check duplicate then increase the quantity
+        let duplicate = false;
+        for (let i = 0; i < currentProducts.length; i++) {
+            if (currentProducts[i].id === product.id &&
+                currentProducts[i].createdAt !== product.createdAt) {
+                currentProducts[i].quantity = parseInt(currentProducts[i].quantity) + parseInt(product.quantity);
+                currentProducts[i].createdAt = product.createdAt;
+
+                duplicate = true;
+                break;
+            }
+        }
+        if (!duplicate) {
+            currentProducts.push(product);
+        }
+
         localStorage.setItem('products', JSON.stringify(currentProducts));
 
     } else {

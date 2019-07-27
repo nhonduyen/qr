@@ -11,6 +11,21 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/simplebar@latest/dist/simplebar.css">
     <link href="https://fonts.googleapis.com/css?family=Roboto&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/site.css" />
+
+    <script defer src="https://cdn.jsdelivr.net/npm/simplebar@latest/dist/simplebar.min.js"></script>
+    <script defer src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script>
+        window.jQuery || document.write('<script defer src="js/lib/jquery.min.js"><\/script>');
+    </script>
+    <script defer src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+    <script defer src="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+    <script>
+        if ($.fn.modal === 'undefined') {
+            document.write('<script defer src="js/lib/bootstrap.min.js"><\/script>');
+        }
+    </script>
+
+    <script defer src="js/simplebar.js"></script>
 </head>
 
 <body>
@@ -37,18 +52,7 @@
         </div>
 
     </section>
-    <div class="toast" id="myToast" data-delay="1000" role="alert" style="position: absolute;left: 0; z-index: 1060;">
-        <div class="toast-header">
-            <strong class="mr-auto"><i class="fa fa-shopping-cart"></i>Giỏ hàng</strong>
-            <small>Hiện tại</small>
-            <button type="button" class="ml-2 mb-1 close" data-dismiss="toast">
-            <span aria-hidden="true">&times;</span>
-        </button>
-        </div>
-        <div class="toast-body">
-            <div>Bạn vừa thêm 1 sản phẩm vào giỏ hàng.</div>
-        </div>
-    </div>
+
     <nav class="container-fluid sticky-top" id="menu1">
         <section class="container" id="horizon-menu1">
             <div class="row" id="category-container">
@@ -154,19 +158,19 @@
             </div>
         </div>
     </div>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
-    <script>
-        window.jQuery || document.write('<script src="js/lib/jquery.min.js"><\/script>');
-    </script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
-    <script>
-        if (!$.fn.modal) {
-            document.write('<script src="js/lib/bootstrap.min.js"><\/script>');
-        }
-    </script>
-    <script src="https://cdn.jsdelivr.net/npm/simplebar@latest/dist/simplebar.min.js"></script>
-    <script src="js/simplebar.js"></script>
+    <div class="toast" id="myToast" data-delay="1000" role="alert" style="position: absolute;left: 0; z-index: 1060;">
+        <div class="toast-header">
+            <strong class="mr-auto"><i class="fa fa-shopping-cart"></i>Giỏ hàng</strong>
+            <small>Hiện tại</small>
+            <button type="button" class="ml-2 mb-1 close" data-dismiss="toast">
+            <span aria-hidden="true">&times;</span>
+        </button>
+        </div>
+        <div class="toast-body">
+            <div>Bạn vừa thêm 1 sản phẩm vào giỏ hàng.</div>
+        </div>
+    </div>
+
     <!-- <script src="js/index.js"></script> -->
 </body>
 
