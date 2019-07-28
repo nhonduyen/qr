@@ -23,7 +23,7 @@ $(document).ready(function() {
 
     $('#btn-search').on('click', function() {
         $('#search, #search-close').show();
-        $('#search').css('width', '90%');
+        $('#search').css('width', '60%');
         $(this).hide();
         $('#search').focus();
     });
@@ -86,7 +86,7 @@ $(document).ready(function() {
         $("#mdDetail").modal();
 
     });
-    $('#listCart').on('click', '.remove-item', function() {
+    $('#tbCart').on('click', '.remove-item', function() {
         let id = $(this).data('id');
         let createdAt = $(this).data('createdat');
 
@@ -98,14 +98,14 @@ $(document).ready(function() {
 
                 if (product.id === id && product.createdAt === createdAt) {
                     let total = parseInt($('#sumCart').text().split(' ')[0].replace(',', '')) - parseInt(product.price) * parseInt(product.quantity);
-                    $('#sumCart').text(numberWithCommas(total) + ' VND');
+                    $('#sumCart').text(numberWithCommas(total) + 'đ');
 
                     let index = products.indexOf(product);
                     products.splice(index, 1);
                     localStorage.setItem('products', JSON.stringify(products));
-                    $(this).closest('li').remove();
+                    $(this).closest('tr').remove();
 
-                    if ($('#listCart li').length == 1) {
+                    if ($('#tbCart > tbody > tr').length === 0) {
                         $("#mdCart").modal('hide');
                     }
                     showCartBar();
@@ -115,7 +115,20 @@ $(document).ready(function() {
             });
         }
     });
-    $('#listCart').on('change input', '.quantity', function(e) {
+    $('#btnCheckout').click(() => {
+        let products = JSON.parse(localStorage.getItem('products'));
+        let order = {
+            id: '0',
+            createdAt: Date.now(),
+            foods: products
+        };
+        localStorage.setItem('order', JSON.stringify(order));
+        localStorage.removeItem('products');
+        $("#mdCart").modal('hide');
+        showCartBar();
+
+    });
+    $('#tbCart').on('change input', '.quantity', function(e) {
 
         if (e.type === 'change' && !$(this).val()) {
             $(this).val(parseInt($(this).data('value')));
@@ -129,8 +142,8 @@ $(document).ready(function() {
 
 
 
-        let id = $(this).siblings('.remove-item').data('id');
-        let createdAt = $(this).siblings('.remove-item').data('createdat');
+        let id = $(this).closest('tr').find('.remove-item').data('id');
+        let createdAt = $(this).closest('tr').find('.remove-item').data('createdat');
 
         let products = JSON.parse(localStorage.getItem('products'));
 
@@ -143,7 +156,7 @@ $(document).ready(function() {
                     localStorage.setItem('products', JSON.stringify(products));
                     let total = getSumCart();
 
-                    $('#sumCart').text(numberWithCommas(total) + ' VND');
+                    $('#sumCart').text(numberWithCommas(total) + 'đ');
 
                     return false;
                 }
@@ -153,9 +166,12 @@ $(document).ready(function() {
     $('#btnCart').click(function() {
         let products = localStorage.getItem('products');
         const cartItems = JSON.parse(products);
-        if (cartItems.length > 0) {
+        if (cartItems && cartItems.length > 0) {
 
-            $('#listCart li:not(#liSum)').remove();
+            $('#btnCheckout').show();
+            $('#mdCart .modal-title').text('Giỏ hàng');
+
+            $('#tbCart > tbody > tr').remove();
 
             $('.nav-link').removeClass('active');
             $(this).children('a').addClass('active');
@@ -164,13 +180,69 @@ $(document).ready(function() {
             let total = 0;
 
             cartItems.forEach((item) => {
+                let html = `
+                <tr>
+                                    <td><strong>${item.name}</strong>
+                                    <a style="color: red" href="javascript:void(0);" class="remove-item" data-id="${item.id}" data-createdAt="${item.createdAt}">Xóa</a>
+                                    </td>
+                                    <td>
+                                    <input style="max-width:50px; text-align: center;" type="number" inputmode="numeric" class="form-control quantity" min="1" data-value="${item.quantity}" value="${item.quantity}" >
+                                    </td>
+                                    <td><span class="price-color" style="width:100px;">${numberWithCommas( item.price)} đ</span></td>
+                                   
+                                </tr>
+                `;
+                // let html1 = `
+                // <li class="list-group-item d-flex justify-content-between align-items-center">
+                //   <span><strong>${item.name}</strong></span>
+                //   <span class="price-color" style="width:100px;">${numberWithCommas( item.price)} VND</span>
+                //   <input style="max-width:50px; text-align: center;" type="number" inputmode="numeric" class="form-control quantity" min="1" data-value="${item.quantity}" value="${item.quantity}" >
+                //   <a href="javascript:void(0);" class="text-dark remove-item" data-id="${item.id}" data-createdAt="${item.createdAt}">
+                //     <i style="color: red" class="fa fa-trash"></i></a>
+                // </li>`;
+
+                total += parseInt(item.price) * parseInt(item.quantity);
+
+                //$('#listCart').prepend(html);
+                $('#tbCart tbody').append(html);
+            });
+
+            $('#sumCart').text(numberWithCommas(total) + ' đ');
+            //$('#sumQuant').text(quant);
+            $('#mdCart').modal();
+        }
+    });
+    $('#btnBill').click(function() {
+
+        $('.nav-link').find('span').removeClass('badge-light').addClass('badge-primary');
+        $('.nav-link').removeClass('active');
+        $(this).children('a').addClass('active');
+        $(this).find('span').removeClass('badge-primary').addClass('badge-light');
+
+        if ($('#billBadge').text() === '0') return false;
+
+        let products = localStorage.getItem('order');
+        const cartItems = JSON.parse(products);
+
+        if (cartItems && cartItems.foods.length > 0) {
+
+            $('#btnCheckout').hide();
+            $('#mdCart .modal-title').text('Hóa đơn');
+            $('#listCart li:not(#liSum)').remove();
+
+            $('.nav-link').removeClass('active');
+            $(this).children('a').addClass('active');
+            $(this).find('span').removeClass('badge-primary').addClass('badge-light');
+
+            let total = 0;
+
+            cartItems.foods.forEach((item) => {
+
                 let html1 = `
                 <li class="list-group-item d-flex justify-content-between align-items-center">
                   <span><strong>${item.name}</strong></span>
-                  <span class="price-color" style="width:100px;">${numberWithCommas( item.price)} VND</span>
-                  <input style="max-width:50px; text-align: center;" type="number" inputmode="numeric" class="form-control quantity" min="1" data-value="${item.quantity}" value="${item.quantity}" >
-                  <a href="javascript:void(0);" class="text-dark remove-item" data-id="${item.id}" data-createdAt="${item.createdAt}">
-                    <i style="color: red" class="fa fa-trash"></i></a>
+                  <span>${item.quantity}</span>
+                  <span class="price-color" style="width:100px;">${numberWithCommas( item.price)} đ</span>
                 </li>`;
 
                 total += parseInt(item.price) * parseInt(item.quantity);
@@ -178,15 +250,10 @@ $(document).ready(function() {
                 $('#listCart').prepend(html1);
             });
 
-            $('#sumCart').text(numberWithCommas(total) + ' VND');
-            //$('#sumQuant').text(quant);
+            $('#sumCart').text(numberWithCommas(total) + ' đ');
+
             $('#mdCart').modal();
         }
-    });
-    $('#btnBill').click(function() {
-        $('.nav-link').removeClass('active');
-        $(this).children('a').addClass('active');
-        $(this).find('span').removeClass('badge-primary').addClass('badge-light');
 
     });
     $('#btnCall').click(function() {
@@ -339,7 +406,7 @@ function generateItem(item) {
         <div class="desc">${item.desc}</div>
         <div class="price" data-price="${item.price}">
             <div class="price-color">
-            ${item.priceWithComma} VND
+            ${item.priceWithComma} đ
             </div>
         </div>
         <div class="row">
@@ -369,7 +436,16 @@ function generateItem(item) {
 
 function showCartBar() {
     let products = localStorage.getItem('products');
-    $('#shopBadge').text(JSON.parse(products).length);
+    let order = localStorage.getItem('order');
+
+    let numOrder = !order ? 0 : 1;
+    let numCartItems = 0;
+
+    if (!products) numCartItems = 0;
+    else numCartItems = JSON.parse(products).length
+
+    $('#billBadge').text(numOrder);
+    $('#shopBadge').text(numCartItems);
     $('#shoppingBar').show();
 }
 

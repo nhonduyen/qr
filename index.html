@@ -17,7 +17,7 @@
     <script>
         window.jQuery || document.write('<script defer src="js/lib/jquery.min.js"><\/script>');
     </script>
-    <script defer src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+
     <script defer src="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
     <script>
         if ($.fn.modal === 'undefined') {
@@ -73,17 +73,18 @@
             </div>
         </div>
     </div>
+
     <nav class="navbar fixed-bottom navbar-light bg-light" id="shoppingBar">
         <div class="container">
             <ul class="nav nav-pills">
-                <li class="nav-item" id="btnCart">
-                    <a href="javascript:void(0);" class="nav-link"><i class="fa fa-shopping-cart"></i>Giỏ hàng <span id="shopBadge" class="badge badge-primary">24</span></a>
+                <li class="nav-item" id="btnCart" title="Giỏ hàng">
+                    <a href="javascript:void(0);" class="nav-link"><i class="fa fa-shopping-cart"></i>Giỏ hàng<span id="shopBadge" class="badge badge-primary">24</span></a>
                 </li>
-                <li class="nav-item" id="btnBill">
-                    <a href="javascript:void(0);" class="nav-link"><i class="fa fa-list-alt"></i>Hóa đơn <span class="badge badge-primary">5</span></a>
+                <li class="nav-item" id="btnBill" title="Hóa đơn">
+                    <a href="javascript:void(0);" class="nav-link"><i class="fa fa-list-alt"></i>Hóa đơn<span id="billBadge" class="badge badge-primary">0</span></a>
                 </li>
-                <li class="nav-item" id="btnCall">
-                    <a href="javascript:void(0);" class="nav-link"><i class="fa fa-bell"></i> Gọi nhân viên <span class="badge badge-primary">5</span></a>
+                <li class="nav-item" id="btnCall" title="Gọi phục vụ">
+                    <a href="javascript:void(0);" class="nav-link"><i class="fa fa-bell"></i>Gọi phục vụ<span id="callBadge" class="badge badge-primary">0</span></a>
                 </li>
             </ul>
 
@@ -146,19 +147,39 @@
                 </div>
                 <!-- Modal body -->
                 <div class="modal-body">
-                    <ul class="list-group list-group-flush" id="listCart">
+                    <div class="table-responsive-sm">
+                        <table id="tbCart" class="table">
+
+                            <tbody>
+
+
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <td scope="row">Tổng tiền</td>
+                                    <td id="sumCart" class="price-color"></td>
+                                    <td>
+                                        <button id="btnCheckout" class="btn btn-primary btn-sm">Đặt món</button>
+                                    </td>
+
+                                </tr>
+
+                            </tfoot>
+                        </table>
+                    </div>
+                    <!-- <ul class="list-group list-group-flush" id="listCart">
                         <li id="liSum" class="list-group-item d-flex justify-content-between align-items-center">
                             <span><strong>Tổng tiền</strong></span>
                             <span id="sumCart" class="price-color" style="width:100px;"></span>
-                            <button class="btn btn-primary"><i class="fa fa-check-square-o"></i>Đặt món</button>
+                            <button id="btnCheckout" class="btn btn-primary btn-sm"><i class="fa fa-check-square-o"></i>Đặt món</button>
 
                         </li>
-                    </ul>
+                    </ul> -->
                 </div>
             </div>
         </div>
     </div>
-    <div class="toast" id="myToast" data-delay="1000" role="alert" style="position: absolute;left: 0; z-index: 1060;">
+    <div class="toast" id="myToast" data-delay="1000" role="alert" style="position: absolute;left: 0; z-index: 100;">
         <div class="toast-header">
             <strong class="mr-auto"><i class="fa fa-shopping-cart"></i>Giỏ hàng</strong>
             <small>Hiện tại</small>
@@ -171,7 +192,6 @@
         </div>
     </div>
 
-    <!-- <script src="js/index.js"></script> -->
 </body>
 
 </html>
