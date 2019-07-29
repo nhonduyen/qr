@@ -106,6 +106,7 @@ $(document).ready(function() {
                     $(this).closest('tr').remove();
 
                     if ($('#tbCart > tbody > tr').length === 0) {
+                        localStorage.removeItem('products');
                         $("#mdCart").modal('hide');
                     }
                     showCartBar();
@@ -173,6 +174,7 @@ $(document).ready(function() {
 
             $('#tbCart > tbody > tr').remove();
 
+            $('.nav-link').find('span').removeClass('badge-light').addClass('badge-primary');
             $('.nav-link').removeClass('active');
             $(this).children('a').addClass('active');
             $(this).find('span').removeClass('badge-primary').addClass('badge-light');
@@ -186,29 +188,21 @@ $(document).ready(function() {
                                     <a style="color: red" href="javascript:void(0);" class="remove-item" data-id="${item.id}" data-createdAt="${item.createdAt}">Xóa</a>
                                     </td>
                                     <td>
-                                    <input style="max-width:50px; text-align: center;" type="number" inputmode="numeric" class="form-control quantity" min="1" data-value="${item.quantity}" value="${item.quantity}" >
+                                    
+                                    <input style="max-width:60px; text-align: center;" type="number" inputmode="numeric" class="form-control quantity" min="1" data-value="${item.quantity}" value="${item.quantity}" >
                                     </td>
                                     <td><span class="price-color" style="width:100px;">${numberWithCommas( item.price)} đ</span></td>
                                    
                                 </tr>
                 `;
-                // let html1 = `
-                // <li class="list-group-item d-flex justify-content-between align-items-center">
-                //   <span><strong>${item.name}</strong></span>
-                //   <span class="price-color" style="width:100px;">${numberWithCommas( item.price)} VND</span>
-                //   <input style="max-width:50px; text-align: center;" type="number" inputmode="numeric" class="form-control quantity" min="1" data-value="${item.quantity}" value="${item.quantity}" >
-                //   <a href="javascript:void(0);" class="text-dark remove-item" data-id="${item.id}" data-createdAt="${item.createdAt}">
-                //     <i style="color: red" class="fa fa-trash"></i></a>
-                // </li>`;
 
                 total += parseInt(item.price) * parseInt(item.quantity);
 
-                //$('#listCart').prepend(html);
                 $('#tbCart tbody').append(html);
             });
 
             $('#sumCart').text(numberWithCommas(total) + ' đ');
-            //$('#sumQuant').text(quant);
+
             $('#mdCart').modal();
         }
     });
@@ -228,7 +222,7 @@ $(document).ready(function() {
 
             $('#btnCheckout').hide();
             $('#mdCart .modal-title').text('Hóa đơn');
-            $('#listCart li:not(#liSum)').remove();
+            $('#tbCart > tbody > tr').remove();
 
             $('.nav-link').removeClass('active');
             $(this).children('a').addClass('active');
@@ -238,16 +232,20 @@ $(document).ready(function() {
 
             cartItems.foods.forEach((item) => {
 
-                let html1 = `
-                <li class="list-group-item d-flex justify-content-between align-items-center">
-                  <span><strong>${item.name}</strong></span>
-                  <span>${item.quantity}</span>
-                  <span class="price-color" style="width:100px;">${numberWithCommas( item.price)} đ</span>
-                </li>`;
+                let html = `
+                <tr>
+                                    <td><strong>${item.name}</strong></td>
+                                    <td>
+                                    ${item.quantity}
+                                        </td>
+                                    <td><span class="price-color" style="width:100px;">${numberWithCommas( item.price)} đ</span></td>
+                                   
+                                </tr>
+                `;
 
                 total += parseInt(item.price) * parseInt(item.quantity);
 
-                $('#listCart').prepend(html1);
+                $('#tbCart > tbody').append(html);
             });
 
             $('#sumCart').text(numberWithCommas(total) + ' đ');
