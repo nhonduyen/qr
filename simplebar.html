@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>My cafe</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <script src="js/fallbackbootstrap.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/simplebar@latest/dist/simplebar.css">
+    <link href="https://fonts.googleapis.com/css?family=Roboto&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/site.css" />
+
+    <!-- <script defer src="https://cdn.jsdelivr.net/npm/vue"></script> -->
+    <script defer src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <script async src="js/validatesession.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/simplebar@latest/dist/simplebar.min.js"></script>
+    <script defer src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script>
+        window.jQuery || document.write('<script defer src="js/lib/jquery.min.js"><\/script>');
+    </script>
+
+    <script defer src="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+    <script>
+        if ($.fn.modal === 'undefined') {
+            document.write('<script defer src="js/lib/bootstrap.min.js"><\/script>');
+        }
+    </script>
+
+    <script defer src="js/index.js"></script>
+</head>
+
+<body>
+
+    <header class="container-fluid" id="header">
+        <div class="container">
+            <a id="bar" data-toggle="modal" data-target="#side-menu" title="Menu" href="javascript:void(0);"><i class="fa fa-bars"></i></a>
+            <h4 class="page-header">My cafe</h4>
+            <a title="Home" class="pull-right" href="./index.html"><i id="icon" class="fa fa-coffee"></i></a>
+        </div>
+    </header>
+
+
+    <nav class="container-fluid sticky-top" id="menu1">
+        <section class="container" id="horizon-menu1">
+            <div class="row" id="category-container">
+                <div class="scrollmenu col" data-simplebar>
+                    <ul>
+                        <li v-for="item in items" @click="findItemsByCat(item.cateId, $event)">
+                            <a href='javascript:;'>{{item.name}}</a>
+                        </li>
+                    </ul>
+                </div>
+                <i ref="searchIcon" @click="showSearchBar($event)" id="btn-search" class="fa fa-search"></i>
+                <input ref="searchBox" v-model="keyword" type="search" name="search" id="search" placeholder="&#xf002 Nhập tên đồ uống" />
+                <i ref="searchClose" @click="closeSearch()" id="search-close" class="fa fa-close"></i>
+            </div>
+
+        </section>
+    </nav>
+    <div class="container-fluid" id="foodlist">
+        <div class="container">
+            <div class="row" id="itemlist">
+                <div class="menu-item" v-for="item in items" :data-catid="item.cateId" :data-id="item.id">
+                    <a class="thumbnail" href="javascript:void(0);">
+                        <img :src="item.url" :alt="item.title" />
+                    </a>
+                    <div class="info">
+                        <a class="title" href="javascript:void(0);">{{item.title}}</a>
+                        <div class="desc">{{item.desc}}</div>
+                        <div class="price">
+                            <div class="price-color">
+                                0 đ
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-12">
+                                <div class="input-group">
+                                    <div @click="modifyQuantity($event, -1);" class="input-group-prepend">
+                                        <span class="input-group-text substract" style="cursor: pointer;">-</span>
+                                    </div>
+                                    <input ref="quant" style="max-width:50px; text-align: center;" type="number" inputmode="numeric" class="form-control quantity" min="1" value="1" :data-price="item.price">
+                                    <div class="input-group-prepend">
+
+                                        <span class="input-group-text plus" style="cursor: pointer;">+</span>
+                                    </div>
+                                    <div class="input-group-append">
+                                        <button type="button" class="btn btn-info btnAdd" :data-id="item.id" :data-price="item.price"><i class="fa fa-cart-plus"></i>Thêm</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+                <div v-if="noitem" class="alert alert-info alert-dismissible fade show">
+                    <button type="button" class="close" data-dismiss="alert">&times;</button> Không tìm thấy món ăn nào phù hợp.
+                </div>
+            </div>
+        </div>
+    </div>
+
+</body>
+
+</html>
