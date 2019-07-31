@@ -172,8 +172,11 @@ var topmenu = new Vue({
             event.target.classList.add('active');
 
             this.isActive = true;
-
-            menu.items = initItems.filter(v => v.cateId === catid);
+            if (catid === 0) {
+                menu.items = initItems;
+            } else {
+                menu.items = initItems.filter(v => v.cateId === catid);
+            }
             if (menu.items === 0) menu.noitem = true;
         },
         showSearchBar: function(event) {
@@ -274,7 +277,11 @@ var sideMenu = new Vue({
             }
             event.target.classList.add('active');
 
-            menu.items = initItems.filter(v => v.cateId === id);
+            if (id === 0) {
+                menu.items = initItems;
+            } else {
+                menu.items = initItems.filter(v => v.cateId === id);
+            }
             if (menu.items === 0) menu.noitem = true;
             $('#side-menu').modal('hide');
         }
