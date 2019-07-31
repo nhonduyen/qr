@@ -2,17 +2,77 @@
 
 let initItems = [];
 let initCates = [];
+
+// public functions
+var mixin = {
+    methods: {
+        getItemsByCategory: function(cateId) {
+
+        },
+        getItemsByName: function(name) {
+
+        },
+        numberWithCommas: function(x) {
+            if (isNaN(x))
+                return -1;
+            return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+        },
+        addToCart: function(product) {
+            let products = localStorage.getItem('products');
+            if (products) {
+                let currentProducts = JSON.parse(products);
+
+                // check duplicate then increase the quantity
+                let duplicate = false;
+                for (let i = 0; i < currentProducts.length; i++) {
+                    if (currentProducts[i].id === product.id &&
+                        currentProducts[i].createdAt !== product.createdAt) {
+                        currentProducts[i].quantity = parseInt(currentProducts[i].quantity) + parseInt(product.quantity);
+                        currentProducts[i].createdAt = product.createdAt;
+
+                        duplicate = true;
+                        break;
+                    }
+                }
+                if (!duplicate) {
+                    currentProducts.push(product);
+                }
+
+                localStorage.setItem('products', JSON.stringify(currentProducts));
+
+            } else {
+                let newProducts = [];
+                newProducts.push(product);
+                localStorage.setItem('products', JSON.stringify(newProducts));
+            }
+            shoppingBar.numCart = JSON.parse(localStorage.getItem('products')).length;
+        },
+        getSumCart: function() {
+            let products = localStorage.getItem('products');
+
+            products = JSON.parse(products);
+            if (products.length === 0) return 0;
+            let sum = 0;
+            products.forEach((product) => {
+                sum += parseInt(product.price) * parseInt(product.quantity);
+            });
+            return sum;
+        }
+    }
+};
+
 var menu = new Vue({
     el: '#itemlist',
     data: {
         items: [],
         noitem: false
     },
+    mixins: [mixin],
     beforeCreate: function() {
-        console.log(`before create ${this.items}`);
+        console.log(`before create`);
     },
     created: function() {
-        console.log(`created ${this.items}`);
+        console.log(`created `);
     },
     mounted: function() {
         this.generateItems();
@@ -34,7 +94,7 @@ var menu = new Vue({
                     url: `./img/BK4PV${String.fromCharCode(i)}.jpg`,
                     cateId: Math.floor((Math.random() * 15) + 1),
                     id: i,
-                    priceWithComma: 0
+                    priceWithComma: this.numberWithCommas(price)
                 };
                 this.items.push(item);
                 // initItems.push(item);
@@ -43,18 +103,13 @@ var menu = new Vue({
         findItemsByName: function(name) {
             return initItems.filter(v => v.title.trim().toUpperCase().indexOf(name.trim().toUpperCase()) !== -1);
         },
-        findItemsByCat: function(catid) {
-            return initItems.filter(v => v.catId === catid);
-        },
-        numberWithCommas: function(x) {
-            if (isNaN(x))
-                return -1;
-            return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-        },
         modifyQuantity: function(event, flag) {
-
-            console.log(event);
-            //return txtQuant + 1 * flag;
+            let txtQuant = event.target.closest('.input-group').childNodes[1].nextSibling;
+            if (isNaN(txtQuant.value) || (Math.round(txtQuant.value) === 1 && flag < 0)) {
+                txtQuant.value = 1;
+                return false;
+            }
+            txtQuant.value = parseInt(txtQuant.value) + 1 * flag;
         }
     }
 });
@@ -63,7 +118,10 @@ var topmenu = new Vue({
     el: '#menu1',
     data: {
         keyword: '',
-        items: [],
+        items: [{
+            cateId: 0,
+            name: 'tất cả'
+        }],
         isActive: false,
         isSearchBarDisplay: false
 
@@ -77,6 +135,7 @@ var topmenu = new Vue({
     mounted: function() {
         this.generateItems();
         initCates = this.items;
+        this.$refs.menu1Link[0].classList.add('active');
         this.$refs.searchBox.style = "display:none;";
         this.$refs.searchClose.style = "display:none;";
 
@@ -89,7 +148,6 @@ var topmenu = new Vue({
             } else {
                 menu.items = initItems;
             }
-            console.log([initItems, menu.items, val]);
             menu.noitem = menu.items.length === 0;
         }
     },
@@ -104,9 +162,7 @@ var topmenu = new Vue({
 
             }
         },
-        findItemsByName: function(name) {
-            return initItems.filter(v => v.title.trim().toUpperCase().indexOf(name.trim().toUpperCase()) !== -1);
-        },
+
         findItemsByCat: function(catid, event) {
 
             let actives = document.querySelectorAll('#menu1 li .active');
@@ -125,26 +181,103 @@ var topmenu = new Vue({
             this.$refs.searchBox.focus();
             this.$refs.searchBox.style = "width: 60%;";
             this.$refs.searchClose.style = "display:block;";
-            //this.isSearchBarDisplay = true;
         },
         closeSearch: function() {
             event.target.style = "display:none;";
 
             this.$refs.searchBox.style = "width: 0; display: none";
             this.$refs.searchIcon.style = "display:block;";
+        },
+
+    }
+});
+
+var shoppingBar = new Vue({
+    el: '#shoppingBar',
+    data: {
+        numCart: 0,
+        numBill: 0
+
+    },
+    beforeCreate: function() {
+
+    },
+    created: function() {
+
+    },
+    mounted: function() {
+        if (localStorage.getItem('products')) {
+            this.numCart = JSON.parse(localStorage.getItem('products')).length;
+        } else {
+            this.numCart = 0;
+        }
+
+    },
+
+    methods: {
+        showCart: function() {
+            alert('cart');
+        },
+        showBill: function() {
+            alert('bill');
         }
     }
 });
 
-// public functions
-Vue.mixin({
+var sideBarOpen = new Vue({
+    el: '#bar',
+    data: {
+
+    },
+    beforeCreate: function() {
+
+    },
+    created: function() {
+
+    },
+    mounted: function() {
+
+    },
+
     methods: {
-        getItemsByCategory: function(cateId) {
-
-        },
-        getItemsByName: function(name) {
-
+        showModal: function() {
+            sideMenu.$refs.side.classList.add('in');
+            $('#side-menu').modal('show');
         },
 
     }
-})
+});
+
+var sideMenu = new Vue({
+    el: '#side-menu',
+    data: {
+        items: topmenu.items,
+    },
+    beforeCreate: function() {
+
+    },
+    created: function() {
+
+    },
+    mounted: function() {
+        this.$refs.sideLink[0].classList.add('active');
+    },
+
+    methods: {
+        getItemsByCat: function(id, event) {
+            let actives = this.$refs.sideLink;
+
+            for (let i = 0; i < actives.length; i++) {
+                if (actives[i].classList.contains('active')) {
+                    actives[i].classList.remove('active');
+                }
+            }
+            event.target.classList.add('active');
+
+            menu.items = initItems.filter(v => v.cateId === id);
+            if (menu.items === 0) menu.noitem = true;
+            $('#side-menu').modal('hide');
+        }
+
+    }
+});
