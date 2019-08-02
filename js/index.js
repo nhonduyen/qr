@@ -18,6 +18,7 @@ var mixin = {
             return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
         },
         addToCart: function(product) {
+            product.createdAt = Date.now();
             let products = localStorage.getItem('products');
             if (products) {
                 let currentProducts = JSON.parse(products);
@@ -162,16 +163,21 @@ var topmenu = new Vue({
 
             }
         },
-
-        findItemsByCat: function(catid, event) {
-
-            let actives = document.querySelectorAll('#menu1 li .active');
+        setActive: function(index) {
+            let actives = document.querySelectorAll('#menu1 li a');
             for (let i = 0; i < actives.length; i++) {
                 actives[i].classList.remove('active');
+                if (i === index) {
+                    actives[i].classList.add('active');
+                }
             }
-            event.target.classList.add('active');
 
             this.isActive = true;
+        },
+        findItemsByCat: function(catid, event) {
+            let index = this.$refs.menu1Link.indexOf(event.target);
+            sideMenu.setActive(index);
+            this.setActive(index);
             if (catid === 0) {
                 menu.items = initItems;
             } else {
@@ -229,19 +235,6 @@ var shoppingBar = new Vue({
 
 var sideBarOpen = new Vue({
     el: '#bar',
-    data: {
-
-    },
-    beforeCreate: function() {
-
-    },
-    created: function() {
-
-    },
-    mounted: function() {
-
-    },
-
     methods: {
         showModal: function() {
             sideMenu.$refs.side.classList.add('in');
@@ -256,12 +249,6 @@ var sideMenu = new Vue({
     data: {
         items: topmenu.items,
     },
-    beforeCreate: function() {
-
-    },
-    created: function() {
-
-    },
     mounted: function() {
         this.$refs.sideLink[0].classList.add('active');
     },
@@ -269,14 +256,9 @@ var sideMenu = new Vue({
     methods: {
         getItemsByCat: function(id, event) {
             let actives = this.$refs.sideLink;
-
-            for (let i = 0; i < actives.length; i++) {
-                if (actives[i].classList.contains('active')) {
-                    actives[i].classList.remove('active');
-                }
-            }
-            event.target.classList.add('active');
-
+            let index = actives.indexOf(event.target);
+            topmenu.setActive(index);
+            this.setActive(index);
             if (id === 0) {
                 menu.items = initItems;
             } else {
@@ -284,7 +266,15 @@ var sideMenu = new Vue({
             }
             if (menu.items === 0) menu.noitem = true;
             $('#side-menu').modal('hide');
-        }
-
+        },
+        setActive: function(index) {
+            let actives = this.$refs.sideLink;
+            for (let i = 0; i < actives.length; i++) {
+                actives[i].classList.remove('active');
+                if (i === index) {
+                    actives[i].classList.add('active');
+                }
+            }
+        },
     }
 });
